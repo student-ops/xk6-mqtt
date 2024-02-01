@@ -11,16 +11,16 @@ import {
 
 const mqtt = require('k6/x/mqtt');
 
-const rnd_count = 2000;
+const rnd_count = 4000;
 
 // create random number to create a new topic at each run
 let rnd = Math.random() * rnd_count;
 
 // conection timeout (ms)
-let connectTimeout = 2000
+let connectTimeout = 10000
 
 // publish timeout (ms)
-let publishTimeout = 2000
+let publishTimeout = 10000
 
 // subscribe timeout (ms)
 let subscribeTimeout = 2000
@@ -100,9 +100,21 @@ if (err != undefined) {
     // fail("fatal could not connect to broker for subscribe")
 }
 
+const payload = {
+    Timestamp: new Date(),
+    Rssi: -52.3, // __VUの値を整数として使用
+    Tempreture: 28.3,
+    Moisture: 63.2,
+    AirPressure: 1024.8
+};
+
+
 export default function () {
     // Message content one per ITER
-    const k6Message = `k6-message-content-${rnd} ${__VU}:${__ITER}`;
+    const jsonMsg = JSON.stringify(payload);
+
+    const k6Message = jsonMsg;
+
     check(publisher, {
         "is publisher connected": publisher => publisher.isConnected()
     });
